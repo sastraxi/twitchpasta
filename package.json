@@ -7,9 +7,17 @@
   "author": "Cameron Gorrie",
   "license": "MIT",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "dotenv": "^8.1.0",
     "express": "^4.17.1",
+    "irc": "^0.5.2",
+    "moment": "^2.24.0",
     "morgan": "^1.9.1",
-    "node-irc": "^0.0.4"
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4",
+    "twitch-emoticons": "^2.1.1"
+  },
+  "scripts": {
+    "start": "node index.js"
   }
 }

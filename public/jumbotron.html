@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"></script>
+    <script type="text/javascript">
+
+      const SECOND = 1000;
+      const REFRESH_MS = 10 * SECOND;
+      const MAX_DELAY_MS = 2 * 60 * SECOND;
+      const CHANNEL_NAME = "riotgames";
+      const MIN_DUPLICATES = 3;
+      const MIN_LENGTH = 10;
+
+      function startMonitoring(channel, minDuplicates) {
+        return $.ajax({
+          url: '/start',
+          method: 'post',
+          data: JSON.stringify({
+            channel: channel,
+            minDuplicates: minDuplicates
+          }),
+          contentType: 'application/json',
+        }).catch(function (err) {
+            console.error('Could not start monitoring chat', err);
+          });
+      }
+
+      function stopMonitoring(channel) {
+        return $.ajax({
+          url: '/stop',
+          method: 'post',
+          data: JSON.stringify({
+            channel: channel,
+          }),
+          contentType: 'application/json',
+        }).catch(function (err) {
+            console.error('Could not stop monitoring', err);
+          });
+      }
+
+      function fetchAndDisplay(channel, maxDelay, minLength) {
+        return $.ajax({
+          url: '/nextMessage',
+          method: 'get',
+          data: {
+            channel: channel,
+            maxDelay: maxDelay,
+            minLength: minLength,
+          },
+        }).then(function(res) {
+            // console.log('got back', res);  
+            $("#loading").toggle(res.count === 0);
+            $("#message")
+              .toggle(res.count > 0)
+              .html(res.html)
+              .attr('title', res.text);
+          });
+      }
+
+      $(function() {
+        startMonitoring(CHANNEL_NAME).then(function() {
+          fetchAndDisplay(CHANNEL_NAME, MAX_DELAY_MS, MIN_LENGTH);
+          setInterval(function() {
+            fetchAndDisplay(CHANNEL_NAME, MAX_DELAY_MS, MIN_LENGTH);
+          }, REFRESH_MS);
+        });
+      });
+    </script>
+    <style type="text/css">
+      .lds-ellipsis {
+        display: inline-block;
+        position: relative;
+        width: 64px;
+        height: 64px;
+      }
+      .lds-ellipsis div {
+        position: absolute;
+        top: 27px;
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: #fff;
+        animation-timing-function: cubic-bezier(0, 1, 1, 0);
+        box-shadow: 4px 4px 2px rgba(0, 0, 0, 0.2);
+      }
+      .lds-ellipsis div:nth-child(1) {
+        left: 6px;
+        animation: lds-ellipsis1 0.6s infinite;
+      }
+      .lds-ellipsis div:nth-child(2) {
+        left: 6px;
+        animation: lds-ellipsis2 0.6s infinite;
+      }
+      .lds-ellipsis div:nth-child(3) {
+        left: 26px;
+        animation: lds-ellipsis2 0.6s infinite;
+      }
+      .lds-ellipsis div:nth-child(4) {
+        left: 45px;
+        animation: lds-ellipsis3 0.6s infinite;
+      }
+      @keyframes lds-ellipsis1 {
+        0% {
+          transform: scale(0);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      @keyframes lds-ellipsis3 {
+        0% {
+          transform: scale(1);
+        }
+        100% {
+          transform: scale(0);
+        }
+      }
+      @keyframes lds-ellipsis2 {
+        0% {
+          transform: translate(0, 0);
+        }
+        100% {
+          transform: translate(19px, 0);
+        }
+      }
+    </style>
+    <style type="text/css">
+      * {
+        box-sizing: border-box;
+      }
+
+      body, html {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+      }
+
+      #outer {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background: #3a4b6f;
+        color: white;
+      }
+
+      #inner {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        padding: 10em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #message {
+        font-family: sans-serif;
+        font-size: 80px;
+        text-shadow: 4px 4px 2px rgba(0, 0, 0, 0.2);
+        max-width: 60%;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="outer">
+      <div id="inner">
+        <p id="message">
+          SPAM THIS MEME TO HELP JAME
+        </p>
+        <div id="loading">
+          <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
