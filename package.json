@@ -1,0 +1,15 @@
+{
+  "name": "twitchpasta",
+  "version": "0.0.1",
+  "description": "Displays the most often-repeated messages on a twitch chat channel",
+  "main": "index.js",
+  "repository": "https://github.com/sastraxi/twitchpasta",
+  "author": "Cameron Gorrie",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^8.1.0",
+    "express": "^4.17.1",
+    "morgan": "^1.9.1",
+    "node-irc": "^0.0.4"
+  }
+}
