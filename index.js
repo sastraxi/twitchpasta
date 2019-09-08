@@ -154,7 +154,7 @@ app.post('/stop', (req, res) => {
 
 const getEmotes = text =>
   parser.parse(text)
-    .replace(/\/1[.]0$/, "/4.0"); // get HQ versions of emotes
+    .replace(/\/1[.]0"/g, "/4.0\""); // get HQ versions of emotes
 
 app.get('/nextMessage', (req, res) => {
   const { channel, maxDelay, minLength } = req.query;
