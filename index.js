@@ -152,6 +152,10 @@ app.post('/stop', (req, res) => {
   }
 });
 
+const getEmotes = text =>
+  parser.parse(text)
+    .replace(/\/1[.]0$/, "/4.0"); // get HQ versions of emotes
+
 app.get('/nextMessage', (req, res) => {
   const { channel, maxDelay, minLength } = req.query;
   const { messages, minDuplicates } = channels[channel];
@@ -161,12 +165,12 @@ app.get('/nextMessage', (req, res) => {
   let maxCount = minDuplicates - 1, maxCountRecent = minDuplicates - 1;
   let nextMessage = null, nextMessageRecent = null;
 
-  const cutoff = +(moment().subtract(maxDelay, 'milliseconds'));
+  const cutoff = +(moment().subtract(+maxDelay, 'milliseconds'));
   const keys = Object.keys(messages);
   const toDelete = [];
 
   keys.forEach((text) => {
-    if (minLength && text.length < minLength) return;
+    if (minLength && text.length < +minLength) return;
 
     const { count, lastSeen } = messages[text];
     
@@ -200,7 +204,7 @@ app.get('/nextMessage', (req, res) => {
       ...messages[nextMessageRecent],
       text: nextMessageRecent,
       count: maxCountRecent,
-      html: parser.parse(nextMessageRecent),
+      html: getEmotes(nextMessageRecent),
     });
     delete messages[nextMessageRecent];
     return;
@@ -210,7 +214,7 @@ app.get('/nextMessage', (req, res) => {
     ...messages[nextMessage],
     text: nextMessage,
     count: maxCount,
-    html: parser.parse(nextMessage),
+    html: getEmotes(nextMessage),
   });
   delete messages[nextMessage];
 });
@@ -218,7 +222,7 @@ app.get('/nextMessage', (req, res) => {
 console.log('Loading twitch emotes...');
 fetcher.fetchTwitchEmotes().then(async () => {
   await fetcher.fetchBTTVEmotes();
-  await fetcher.fetchFFZEmotes();
+  // await fetcher.fetchFFZEmotes();
   console.log('Twitch, BTTV, and FFZ emotes loaded.');
 
   app.listen(process.env.PORT, () => {
