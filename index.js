@@ -10,9 +10,8 @@ const { EmoteFetcher, EmoteParser } = require('twitch-emoticons');
 
 const fetcher = new EmoteFetcher();
 const parser = new EmoteParser(fetcher, {
-  type: 'html',
+  template: '<img class="twitch-emote twitch-emote-{size}" src="{link}"></img>',
   match: /(\S+)/g,
-  
 });
 
 const app = express();
